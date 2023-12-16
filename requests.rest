@@ -1,0 +1,49 @@
+
+@authBaseURl = http://localhost:3000
+
+###* GET USERS
+
+GET {{ authBaseURl }}/users
+
+
+### * CREATE USER
+
+POST  {{ authBaseURl }}/users
+Content-Type: application/json
+
+{
+    "username": "Bruce Wayne",
+    "password": "Password@123"
+}
+
+### * LOGIN AND GENERATE TOKEN
+# @name login
+
+POST  http://localhost:3000/login
+Content-Type: application/json
+
+{
+    "username": "Bruce Wayne",
+    "password": "Password@123"
+}
+
+###
+@accessToken = {{ login.response.body.$.accessToken }}
+@refreshToken = {{ login.response.body.$.refreshToken }}
+
+### * FETCH NEW TOKEN USING REFRESH TOKEN
+# @name token
+
+POST http://localhost:3000/token
+Content-Type: application/json
+
+{
+    "token": "{{ refreshToken }}"
+}
+
+###
+@accessToken = {{ token.response.body.$.accessToken }}
+
+### * GET POSTS
+GET http://localhost:4000/posts
+Authorization: Bearer {{ accessToken }}
